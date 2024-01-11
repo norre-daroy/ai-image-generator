@@ -1,95 +1,110 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+import Head from 'next/head';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const [selectedFile, setSelectedFile] = useState<File>();
+  const [userPrompt, setUserPrompt] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [gender, setGender] = useState<string>('');
+  const router = useRouter();
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      if (!selectedFile) return;
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('gender', gender);
+      formData.append('email', email);
+      formData.append('userPrompt', userPrompt);
+      //👇🏻 post data to server's endpoint
+      await fetch('/api/generate', {
+        method: 'POST',
+        body: formData,
+      });
+      //👇🏻 redirect to Success page
+      router.push('/success');
+    } catch (err) {
+      console.error({ err });
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
+    <main className="flex items-center md:p-8 px-4 w-full justify-center min-h-screen flex-col">
+      <Head>
+        <title>Avatar Generator</title>
+      </Head>
+      <header className="mb-8 w-full flex flex-col items-center justify-center">
+        <h1 className="font-bold text-4xl">Avatar Generator</h1>
+        <p className="opacity-60">
+          Upload a picture of yourself and generate your avatar
         </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+      </header>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+      <form
+        method="POST"
+        className="flex flex-col md:w-[60%] w-full"
+        onSubmit={(e) => handleSubmit(e)}
+      >
+        <label htmlFor="email">Email Address</label>
+        <input
+          type="email"
+          required
+          className="px-4 py-2 border-[1px] mb-3"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-      </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <label htmlFor="gender">Gender</label>
+        <select
+          className="border-[1px] py-3 px-4 mb-4 rounded"
+          name="gender"
+          id="gender"
+          value={gender}
+          onChange={(e) => setGender(e.target.value)}
+          required
         >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+          <option value="">Select</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
+        <label htmlFor="image">Upload your picture</label>
+        <input
+          name="image"
+          type="file"
+          className="border-[1px] py-2 px-4 rounded-md mb-3"
+          accept=".png, .jpg, .jpeg"
+          required
+          onChange={({ target }) => {
+            if (target.files) {
+              const file = target.files[0];
+              setSelectedFile(file);
+            }
+          }}
+        />
+        <label htmlFor="prompt">
+          Add custom prompt for your avatar
+          <span className="opacity-60">(optional)</span>
+        </label>
+        <textarea
+          rows={4}
+          className="w-full border-[1px] p-3"
+          name="prompt"
+          id="prompt"
+          value={userPrompt}
+          placeholder="Copy image prompts from https://lexica.art"
+          onChange={(e) => setUserPrompt(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="px-6 py-4 mt-5 bg-blue-500 text-lg hover:bg-blue-700 rounded text-white"
         >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          Generate Avatar
+        </button>
+      </form>
     </main>
-  )
+  );
 }
