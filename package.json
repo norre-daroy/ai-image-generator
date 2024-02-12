@@ -9,11 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@trigger.dev/nextjs": "^2.3.17",
-    "@trigger.dev/react": "^2.3.17",
-    "@trigger.dev/replicate": "^2.3.17",
-    "@trigger.dev/resend": "^2.3.17",
-    "@trigger.dev/sdk": "^2.3.17",
+    "@trigger.dev/nextjs": "^2.3.18",
+    "@trigger.dev/react": "^2.3.18",
+    "@trigger.dev/replicate": "^2.3.18",
+    "@trigger.dev/resend": "^2.3.18",
+    "@trigger.dev/sdk": "^2.3.18",
     "@types/formidable": "^3.4.5",
     "formidable": "^3.5.1",
     "next": "14.0.4",
@@ -30,6 +30,6 @@
     "typescript": "^5"
   },
   "trigger.dev": {
-    "endpointId": "ai-image-generator-l7_P"
+    "endpointId": "ai-image-generator-0YSd"
   }
 }
